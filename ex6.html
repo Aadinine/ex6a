@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q1 - Budget Calculator | URK23CS1010</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #2c3e50; }
+        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 25px; }
+        .input-section, .result-section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #3498db; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; }
+        input[type="number"] { width: 95%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        input[type="number"]:focus { border-color: #3498db; outline: none; }
+        .percentage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; margin-top: 15px; }
+        button:hover { background: #2980b9; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .result-item { background: #e8f4fc; padding: 15px; border-radius: 8px; text-align: center; }
+        .result-value { font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .alert { padding: 10px; background: #f8d7da; color: #721c24; border-radius: 5px; margin-top: 15px; border-left: 5px solid #dc3545; display: none; }
+        footer { text-align: center; margin-top: 25px; color: #7f8c8d; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Budget Calculator App</h1>
+            <p class="subtitle">Enter Amount to Manage</p>
+        </header>
+
+        <section class="input-section">
+            <h2>How would you like to divide your money?</h2>
+            <div class="input-group">
+                <label for="total-amount">Total Amount (₹)</label>
+                <input type="number" id="total-amount" placeholder="Enter total amount" min="0">
+            </div>
+
+            <div class="percentage-grid">
+                <div class="input-group">
+                    <label for="room-rent">Room Rent (%)</label>
+                    <input type="number" id="room-rent" value="10" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="accessories">Accessories (%)</label>
+                    <input type="number" id="accessories" value="40" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="emergency">Emergency (%)</label>
+                    <input type="number" id="emergency" value="20" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="saving">Saving (%)</label>
+                    <input type="number" id="saving" value="30" min="0" max="100">
+                </div>
+            </div>
+
+            <button id="evaluate-btn">Evaluate My Money</button>
+            <div id="error-alert" class="alert"></div>
+        </section>
+
+        <section class="result-section">
+            <h2>Budget Allocation</h2>
+            <div class="result-grid">
+                <div class="result-item">
+                    <div>Room Rent</div>
+                    <div id="room-rent-result" class="result-value">₹0.00</div>
+                </div>
+                <div class="result-item">
+                    <div>Accessories</div>
+                    <div id="accessories-result" class="result-value">₹0.00</div>
+                </div>
+                <div class="result-item">
+                    <div>Emergency</div>
+                    <div id="emergency-result" class="result-value">₹0.00</div>
+                </div>
+                <div class="result-item">
+                    <div>Saving</div>
+                    <div id="saving-result" class="result-value">₹0.00</div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Designed by <strong>Aadityaraj Rajit (URK23CS1010)</strong> | Web Technology Lab - Exercise 6 | Q1</p>
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function calculateBudget() {
+                $("#error-alert").hide();
+                let totalAmount = parseFloat($("#total-amount").val());
+                let roomRentPercent = parseFloat($("#room-rent").val());
+                let accessoriesPercent = parseFloat($("#accessories").val());
+                let emergencyPercent = parseFloat($("#emergency").val());
+                let savingPercent = parseFloat($("#saving").val());
+                let totalPercent = roomRentPercent + accessoriesPercent + emergencyPercent + savingPercent;
+
+                if (isNaN(totalAmount) || totalAmount <= 0) {
+                    showError("Please enter a valid total amount greater than zero.");
+                    return;
+                }
+                if (isNaN(totalPercent)) {
+                    showError("Please enter valid percentage values.");
+                    return;
+                }
+                if (totalPercent !== 100) {
+                    showError("The total percentage must be 100%. Current total: " + totalPercent + "%");
+                    return;
+                }
+
+                $("#room-rent-result").text("₹" + (totalAmount * roomRentPercent / 100).toFixed(2));
+                $("#accessories-result").text("₹" + (totalAmount * accessoriesPercent / 100).toFixed(2));
+                $("#emergency-result").text("₹" + (totalAmount * emergencyPercent / 100).toFixed(2));
+                $("#saving-result").text("₹" + (totalAmount * savingPercent / 100).toFixed(2));
+            }
+            function showError(message) {
+                $("#error-alert").html("<strong>Error:</strong> " + message).show();
+            }
+            $("#evaluate-btn").click(calculateBudget);
+        });
+    </script>
+</body>
+</html>
